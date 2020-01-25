@@ -1,17 +1,16 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
-void main() {
-  return runApp(
-    MaterialApp(
-      home: Scaffold(
-        backgroundColor: Colors.black12,
-        body: DicePage(),
+import 'common.dart';
+import 'game.dart';
+
+void main() => runApp(
+      MaterialApp(
+        home: Scaffold(
+          backgroundColor: Colors.black12,
+          body: DicePage(),
+        ),
       ),
-    ),
-  );
-}
+    );
 
 // 0F5CBF, 027333, F2A71B, F23D3D
 
@@ -23,18 +22,7 @@ class DicePage extends StatefulWidget {
 }
 
 class _DicePageState extends State<DicePage> {
-  int leftDiceNumber = 1;
-  int rightDiceNumber = 1;
-  int flexValue = 1;
-
-  int score1 = 0;
-  int score2 = 0;
-
-  int winner = 0;
-
-  bool isFirstPlayersTurn = true;
-  bool isSecondPlayersTurn = false;
-  bool disable = false;
+  var game = Game(1);
 
   @override
   Widget build(BuildContext context) {
@@ -63,11 +51,11 @@ class _DicePageState extends State<DicePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      Text(
-                        "PLAYER 1: ",
-                        style: TextStyle(fontSize: 20.0),
+                      CustomText(
+                        game.first.name.toUpperCase(),
+                        color: Colors.black,
                       ),
-                      Text(score1.toString())
+                      Text(game.first.score.toString())
                     ],
                   ),
                   SizedBox(
@@ -76,11 +64,11 @@ class _DicePageState extends State<DicePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      Text(
-                        "PLAYER 2: ",
-                        style: TextStyle(fontSize: 20.0),
+                      CustomText(
+                        game.second.name.toUpperCase(),
+                        color: Colors.black,
                       ),
-                      Text(score2.toString())
+                      Text(game.second.score.toString())
                     ],
                   ),
                   SizedBox(
@@ -100,13 +88,13 @@ class _DicePageState extends State<DicePage> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Image.asset("images/dice$leftDiceNumber.png"),
+                child: Image.asset("images/dice${game.first.diceNumber}.png"),
               ),
             ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Image.asset("images/dice$rightDiceNumber.png"),
+                child: Image.asset("images/dice${game.second.diceNumber}.png"),
               ),
             ),
           ],
@@ -119,12 +107,11 @@ class _DicePageState extends State<DicePage> {
                 padding: const EdgeInsets.all(8.0),
                 child: FlatButton(
                   color: const Color(0xFF0A73BF),
-                  onPressed: isFirstPlayersTurn && !disable
+                  onPressed: game.first.turn && !game.disable
                       ? () => onPlayer1PressButton()
                       : null,
-                  child: Text(
-                    "Player 1",
-                    style: TextStyle(color: Colors.white),
+                  child: CustomText(
+                    game.first.name,
                   ),
                 ),
               ),
@@ -136,13 +123,10 @@ class _DicePageState extends State<DicePage> {
                   color: const Color(0xFF0A73BF),
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
-                  onPressed: isSecondPlayersTurn && !disable
+                  onPressed: game.second.turn && !game.disable
                       ? () => onPlayer2PressButton()
                       : null,
-                  child: Text(
-                    "Player 2",
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: CustomText(game.second.name),
                 ),
               ),
             ),
@@ -153,9 +137,21 @@ class _DicePageState extends State<DicePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Container(
-              margin: const EdgeInsets.only(top: 70.0),
-              child: getText(),
-            )
+              margin: const EdgeInsets.only(top: 40.0),
+              child: getCustomText(),
+            ),
+            game.hasWinner()
+                ? FlatButton(
+                    color: Colors.blue,
+                    textColor: Colors.white,
+                    child: Text("Restart"),
+                    onPressed: () {
+                      setState(() {
+                        game.start();
+                      });
+                    },
+                  )
+                : SizedBox()
           ],
         )
       ],
@@ -164,69 +160,33 @@ class _DicePageState extends State<DicePage> {
 
   onPlayer1PressButton() {
     setState(() {
-      leftDiceNumber = Random().nextInt(6) + 1;
-      isFirstPlayersTurn = false;
-      isSecondPlayersTurn = true;
+      print(game.first.diceNumber);
+      game.first.shuffle();
+      print(game.first.diceNumber);
+
+      game.switchTurn();
+      print(game.first);
     });
   }
 
   onPlayer2PressButton() {
     setState(() {
-      rightDiceNumber = Random().nextInt(6) + 1;
-      isFirstPlayersTurn = true;
-      isSecondPlayersTurn = false;
-      calculate();
+      game.second.shuffle();
+      game.switchTurn();
+      game.calculateRound();
     });
   }
 
-  calculate() {
-    if (leftDiceNumber > rightDiceNumber) {
-      score1++;
-    } else if (leftDiceNumber < rightDiceNumber) {
-      score2++;
-    }
-
-    if (score1 == 5) {
-      winner = 1;
-      isFirstPlayersTurn = true;
-      isSecondPlayersTurn = false;
-      disable = true;
-    }
-
-    if (score2 == 5) {
-      winner = 2;
-      isFirstPlayersTurn = true;
-      isSecondPlayersTurn = false;
-
-      disable = true;
-    }
-  }
-
-  getText() {
-    if (winner == 1 || winner == 2) {
-      return Text(
-        "Player $winner has WON!",
-        style: TextStyle(color: Colors.amber, fontSize: 30.0),
+  getCustomText() {
+    if (game.hasWinner()) {
+      return CustomText(
+        "PLAYER ${game.winner} HAS WON!",
+        color: Colors.amber,
       );
     } else {
-      return Text(
+      return CustomText(
         "Play until you score 5!",
-        style: TextStyle(color: Colors.white, fontSize: 25.0),
       );
     }
-  }
-}
-
-class DisplayText extends StatelessWidget {
-  final String _message;
-
-  const DisplayText(this._message, {Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      this._message,
-      style: TextStyle(color: Colors.white, fontSize: 25.0),
-    );
   }
 }
