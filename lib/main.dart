@@ -22,7 +22,7 @@ class DicePage extends StatefulWidget {
 }
 
 class _DicePageState extends State<DicePage> {
-  var game = Game(1);
+  var game = Game(3);
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +185,7 @@ class _DicePageState extends State<DicePage> {
       );
     } else {
       return CustomText(
-        "Play until you score 5!",
+        "Play until you score ${game.limit}!",
       );
     }
   }
