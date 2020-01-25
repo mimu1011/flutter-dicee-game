@@ -1,25 +1,19 @@
-# Dice! Flutter Multiplayer Game🎲
+# Dice! Flutter Multiplayer Game 🎲 🚀
 
-## Our Goal
+## The Game
 
-The objective of this tutorial is to introduce you to the core programming concepts that will form the foundation of most of the apps you’ll build in the future. This app will teach you how to make apps with functionality using setState() inside Stateful Flutter widgets.
+An example of a multiplayer game with flutter😁 The game is very simple and it was fun to code it. Feel free to improve the game. I really appreciate your PULL REQUEST!
 
+## How it works: 
+The game has 5 rounds each. The first player begins to roll the dice. Then the second player rolls the dice. The player with the larger number of dice wins the round. The game ends when a player has won 5 rounds. The current score is displayed on the ranking list. 
 
-## What you will create
-
-We’re going to make a Las Vegas dice app. You can make the die roll at the press of a button. With this app in your pocket, you’ll be able to settle any score on the go!
 
 ![The Game](./static/game.gif)
 
-## What you will learn
+## Author 🤓 
+**Muhammed Misir**
 
-- How to use Flutter stateless widgets to design the user interface.
-- How to use Flutter stateful widgets to update the user interface.
-- How to change the properties of various widgets.
-- How to use onPressed listeners to detect when buttons are pressed.
-- How to use setState to mark the widget tree as dirty and requiring update on the next render.
-- How to use Expanded to make widgets adapt to screen dimensions.
-- Understand and use string interpolation.
-- Learn about basic dart programming concepts such as data types and functions.
-- Code and use gesture controls.
+<a href="https://www.instagram.com/misir_muhammed/">Learn more on Instgram!</a>
+
+
 
